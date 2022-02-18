@@ -88,7 +88,7 @@ Nu = 1.2;
 Lamda = 85;
 Eta = 2;
 EI_window = [65 110];%sjy;[50 150];%seconds
-EI_pipeline_Chao(sbj_name, project_name, block_names(1), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)
+EI_pipeline_Chao(sbj_name, project_name, block_names(1), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)%test
 
 Nu = 1.0;
 Lamda = 70;
