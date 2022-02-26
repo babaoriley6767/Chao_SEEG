@@ -84,17 +84,17 @@ remark = true; % Manually determine whether the electrode belongs to surface or 
 %Step 1 
 ER_pipeline_Chao(sbj_name, project_name, block_names, dirs , 'Band', 'EI') 
 %Step 2
-Nu = 1.2;
-Lamda = 85;
+Nu = 1.25;  %1.25
+Lamda = 100; %80
 Eta = 2;
 EI_window = [65 110];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(1), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)%test
 
-Nu = 1.0;
-Lamda = 70;
-Eta = 4;
-EI_window = [65 110];%sjy;[50 150];%seconds
-EI_pipeline_Chao(sbj_name, project_name, block_names{2}, dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)
+Nu = 1.25;
+Lamda = 80;
+Eta = 2;
+EI_window = [100 150];%sjy;[50 150];%seconds
+EI_pipeline_Chao(sbj_name, project_name, block_names(2), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)
 
 %% Group analysis of the subjVar_volume_BR.eleinfo
 

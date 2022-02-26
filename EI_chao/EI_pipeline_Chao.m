@@ -18,6 +18,22 @@ for bi = 1%:length(block_names)
     fn = sprintf('%s/originalData/%s/global_%s_%s_%s.mat',dirs.data_root,sbj_name,project_name,sbj_name,bn);
     load(fn,'globalVar');
     
+    if ~isempty([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
+        prompt = ['sz_loc_EI already exist for ' [sbj_name,'_',bn] ' . Do you want to use the previous parameters?'] ;
+        ID = input(prompt,'s');
+        if strcmp(ID, 'y')
+            load([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
+            Nu = sz_loc_EI.Nu;
+            Lamda = sz_loc_EI.Lamda;
+            Eta = sz_loc_EI.Eta;
+            EI_window = sz_loc_EI.EI_window;
+            disp('we''re now using the previous parameters~')
+        else
+            warning('even though the sz_loc_EI already exist, we''re now using the new parameter!!!')
+        end
+    else
+    end
+    
     if strcmp(datatype,'Band')
         data_root=globalVar.BandData;
     else
@@ -174,9 +190,25 @@ for bi = 1%:length(block_names)
     ylabel('Electrode name (BR)')
     
     %% identify the bad channel mannuly
-    [bad_chan] = promptBadChanSpec;
-    gray_idx(bad_chan) = 0;
     
+    if ~isempty([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
+        prompt = ['sz_loc_EI.bad_chan already exist for ' [sbj_name,'_',bn] ' . Do you want to use the previous parameters?'] ;
+        ID = input(prompt,'s');
+        if strcmp(ID, 'y')
+            load([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
+            bad_chan = sz_loc_EI.bad_chan;
+            disp('we''re now using the previous parameters~')
+        else
+            [bad_chan] = promptBadChanSpec;
+            sz_loc_EI.bad_chan = bad_chan;
+            warning('even though the sz_loc_EI.bad_chan already exist, we''re now using the new parameter!!!')
+        end
+    else
+        [bad_chan] = promptBadChanSpec;
+        sz_loc_EI.bad_chan = bad_chan;
+    end
+    
+    gray_idx(bad_chan) = 0;
     %% plot again
     close all
     
@@ -416,10 +448,10 @@ for bi = 1%:length(block_names)
     
     %% plot the EI on inflated brain
     
-    addpath(genpath('/Users/tony/Desktop/function_tools/for_plot/iELVis-master/'))
-    
-    global globalFsDir;
-    globalFsDir ='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';
+    %     addpath(genpath('/Users/tony/Desktop/function_tools/for_plot/iELVis-master/'))
+    %
+    %     global globalFsDir;
+    %     globalFsDir ='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';
     fsDir='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';%%% seems useful
     cd([fsDir]);
     
@@ -438,7 +470,7 @@ for bi = 1%:length(block_names)
     bv_chan_names = sz_loc_EI.eleinfo.bv_names(gray_idx,:);
     elecCoord152 = sz_loc_EI.eleinfo.MNI152_volume(gray_idx,:);
     elecCoord305 = sz_loc_EI.eleinfo.MNI305_volume(gray_idx,:);
-%     EI = cell2mat(sz_loc_EI.eleinfo.EI(:));
+    %     EI = cell2mat(sz_loc_EI.eleinfo.EI(:));
     EI_color = cell2mat(EI_index);
     EI_color(isnan(EI_color)) = 0;
     
@@ -474,7 +506,7 @@ for bi = 1%:length(block_names)
     ID = input(prompt,'s');
     if strcmp(ID, 'y')
     else
-        warning('reset the parameters')
+        warning('reset the parameters % you could put a break point here and change the EI mannuly in sz_loc_EI.eleinfo')
         return
     end
     
@@ -702,7 +734,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -717,7 +749,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -732,7 +764,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -804,7 +836,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -819,7 +851,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -834,7 +866,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -906,7 +938,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -921,7 +953,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
@@ -936,7 +968,7 @@ for bi = 1%:length(block_names)
     box 'on'
     axis square;
     r = corrcoef(data1, data2);
-%     disp(r(1,2));
+    %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
     str=sprintf('r= %1.2f',tmp(1,2));
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
