@@ -5,7 +5,7 @@ function CreateFolders(sbj_name, project_name, block_name, center, dirs, import_
 sbj_name_generic = sbj_name;
 
 if import_server
-    all_folders = dir(fullfile('/Users/tony/Desktop/data_SEEG/server/'));%/Volumes/CHAO_IRON_M/data_SEEG/server/
+    all_folders = dir(fullfile('/Volumes/workstation/EPNETWORK/server/'));%/Volumes/CHAO_IRON_M/data_SEEG/server/
     for i = 1:length(all_folders)
         tpm(i) = contains(all_folders(i).name, sbj_name_generic);
     end
@@ -81,7 +81,7 @@ for bn = 1:length(block_name)
     % iEEG data
     if import_server
             waitfor(msgbox(['Choose server file for iEEG data of block ' block_name{bn}]));
-            [FILENAME, PATHNAME] = uigetfile(['/Users/tony/Desktop/data_SEEG/server/' sbj_folder_name,'.edf'],'All Files (*.*)','MultiSelect','on');%/Volumes/CHAO_IRON_M/data_SEEG/server/
+            [FILENAME, PATHNAME] = uigetfile(['/Volumes/workstation/EPNETWORK/server/' sbj_folder_name,'.edf'],'All Files (*.*)','MultiSelect','on');%/Volumes/CHAO_IRON_M/data_SEEG/server/
             globalVar.iEEG_data_server_path = [PATHNAME, FILENAME];
     % Save globalVariable
     fn = [folders.originalData '/' sprintf('global_%s_%s_%s.mat',project_name,sbj_name,block_name{bn})];

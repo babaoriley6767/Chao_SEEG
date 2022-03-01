@@ -26,7 +26,7 @@ end
 
 
 %Set freesurfer folder
-all_folders = dir(fullfile('/Users/tony/Desktop/data_SEEG/server/'));% /Volumes/CHAO_IRON_M/data_SEEG/server/
+all_folders = dir(fullfile('/Volumes/workstation/EPNETWORK/server/'));% /Volumes/CHAO_IRON_M/data_SEEG/server/
 if isempty(all_folders)
     warning('You are not connected to the server, therefore no Fressurfer folder will be specified.')
 else
@@ -35,7 +35,7 @@ else
     end
     sbj_folder_name = all_folders(find(tpm == 1)).name;
 
-    all_folders_sbj = dir(fullfile(['/Users/tony/Desktop/data_SEEG/server/' sbj_folder_name]));%/Volumes/CHAO_IRON_M/data_SEEG/server/
+    all_folders_sbj = dir(fullfile(['/Volumes/workstation/EPNETWORK/server/' sbj_folder_name]));%/Volumes/CHAO_IRON_M/data_SEEG/server/
     for i = 1:length(all_folders_sbj)
         tpm_2(i) = contains(all_folders_sbj(i).name, 'surfer');
     end
@@ -43,12 +43,12 @@ else
         warning('There is no Freesurfer folder')
         dirs.freesurfer = [];
     else
-        dirs.freesurfer = ['/Users/tony/Desktop/data_SEEG/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
+        dirs.freesurfer = ['//Volumes/workstation/EPNETWORK/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
     end
 end
 
 %Set brainvisa folder
-all_folders = dir(fullfile('/Users/tony/Desktop/data_SEEG/server/'));% /Volumes/CHAO_IRON_M/data_SEEG/server/
+all_folders = dir(fullfile('/Volumes/workstation/EPNETWORK/server/'));% /Volumes/CHAO_IRON_M/data_SEEG/server/
 if isempty(all_folders)
     warning('You are not connected to the server, therefore no Brainvisa folder will be specified.')
 else
@@ -57,7 +57,7 @@ else
     end
     sbj_folder_name = all_folders(find(tpm == 1)).name;
 
-    all_folders_sbj = dir(fullfile(['/Users/tony/Desktop/data_SEEG/server/' sbj_folder_name]));%/Volumes/CHAO_IRON_M/data_SEEG/server/
+    all_folders_sbj = dir(fullfile(['//Volumes/workstation/EPNETWORK/server/' sbj_folder_name]));%/Volumes/CHAO_IRON_M/data_SEEG/server/
     for i = 1:length(all_folders_sbj)
         tpm_2(i) = contains(all_folders_sbj(i).name, 'visa');
     end
@@ -65,7 +65,7 @@ else
         warning('There is no Brianvisa folder')
         dirs.brainvisa = [];
     else
-        dirs.brainvisa = ['/Users/tony/Desktop/data_SEEG/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
+        dirs.brainvisa = ['//Volumes/workstation/EPNETWORK/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
     end
 end 
     

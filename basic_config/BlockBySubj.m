@@ -28,6 +28,12 @@ switch sbj
 end
 end
 
+switch project
+    case 'EPnetwork'
+                BN = {'SZ1','SZ2'};
+end
+
+   
 
 if ~exist('BN')
     BN = {'none'};

@@ -18,7 +18,7 @@ for bi = 1%:length(block_names)
     fn = sprintf('%s/originalData/%s/global_%s_%s_%s.mat',dirs.data_root,sbj_name,project_name,sbj_name,bn);
     load(fn,'globalVar');
     
-    if ~isempty([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
+    if exist([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
         prompt = ['sz_loc_EI already exist for ' [sbj_name,'_',bn] ' . Do you want to use the previous parameters?'] ;
         ID = input(prompt,'s');
         if strcmp(ID, 'y')
@@ -191,7 +191,7 @@ for bi = 1%:length(block_names)
     
     %% identify the bad channel mannuly
     
-    if ~isempty([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
+    if exist([dirs.original_data filesep sbj_name filesep 'sz_loc_EI_' [sbj_name,'_',bn] '.mat'])
         prompt = ['sz_loc_EI.bad_chan already exist for ' [sbj_name,'_',bn] ' . Do you want to use the previous parameters?'] ;
         ID = input(prompt,'s');
         if strcmp(ID, 'y')
@@ -448,10 +448,10 @@ for bi = 1%:length(block_names)
     
     %% plot the EI on inflated brain
     
-    %     addpath(genpath('/Users/tony/Desktop/function_tools/for_plot/iELVis-master/'))
+    addpath(genpath('/Users/tony/Desktop/function_tools/for_plot/iELVis-master/'))
     %
-    %     global globalFsDir;
-    %     globalFsDir ='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';
+    global globalFsDir;
+    globalFsDir ='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';
     fsDir='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';%%% seems useful
     cd([fsDir]);
     
@@ -733,10 +733,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis EZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'notavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -748,10 +752,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis PZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'notavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -763,10 +771,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis EZPZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'notavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -835,10 +847,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis EZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'unavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -850,10 +866,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis PZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'unavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -865,10 +885,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis EZPZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'unavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -937,10 +961,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis EZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'unavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -952,10 +980,14 @@ for bi = 1%:length(block_names)
     ylabel ('Eu dis PZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+   
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'unavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
@@ -967,10 +999,14 @@ for bi = 1%:length(block_names)
     xlabel ('Eu dis EZPZ');
     box 'on'
     axis square;
-    r = corrcoef(data1, data2);
+    
     %     disp(r(1,2));
     tmp=corrcoef(data1,data2);
-    str=sprintf('r= %1.2f',tmp(1,2));
+    if size(tmp,2) == 2
+        str=sprintf('r= %1.2f',tmp(1,2));
+    else
+        str = 'unavailable';
+    end
     Tx = text(min(get(gca, 'xlim')), max(get(gca, 'ylim')), str);
     set(Tx, 'fontsize', 14, 'verticalalignment', 'top', 'horizontalalignment', 'left');
     
