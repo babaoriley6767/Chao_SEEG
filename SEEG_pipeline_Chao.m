@@ -31,6 +31,9 @@ sbj_name = '2015_FT_wangzheng';
 sbj_name = '2015_FT_xumengjiao';
 sbj_name = '2015_FT_yangbihong';
 sbj_name = '2015_FT_yinfengting';
+sbj_name = '2015_FT_yuanjinrui';
+sbj_name = '2015_FT_zhaoxichun';
+sbj_name = '2017_FT_chengang';
 
 % center
 if strcmp(sbj_name(6:7),'FT')
@@ -95,15 +98,15 @@ remark = true; % Manually determine whether the electrode belongs to surface or 
 ER_pipeline_Chao(sbj_name, project_name, block_names, dirs , 'Band', 'EI') 
 %Step 2
 Nu = 1.5;  %1.25
-Lamda = 200; %80
-Eta = 5;
-EI_window = [];%sjy;[50 150];%seconds
+Lamda = 450; %80
+Eta = 15;
+EI_window = [220 350];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(1), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)%test
 
 Nu = 1.5;
-Lamda = 200;
-Eta = 5;
-EI_window = [220 300];%sjy;[50 150];%seconds
+Lamda = 500;
+Eta = 10;
+EI_window = [1 80];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(2), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)
 
 %% Group analysis of the subjVar_volume_BR.eleinfo

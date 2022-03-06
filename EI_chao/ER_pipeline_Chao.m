@@ -68,13 +68,14 @@ for bi = 1:length(block_names) %先算一个
             theta_band = [4:7]; %[4:7]
             alpha_band = [8:12]; %[8:12]
             beta_band = [13:24]; %[13:24]
-            gamma_band = [25:49,51:99,101:149,151:199,201:250];%[24:97];
+            %             gamma_band = [25:49,51:99,101:149,151:199,201:250];%[24:97];
+            gamma_band = [24:250];%[24:97];
             
             
-%             theta_band = [101:140]; 
-%             alpha_band = [141:150]; 
-%             beta_band = [151:190]; 
-%             gamma_band = [191:400];
+            %             theta_band = [101:140];
+            %             alpha_band = [141:150];
+            %             beta_band = [151:190];
+            %             gamma_band = [191:400];
             
             
             % define sliding window duration D
