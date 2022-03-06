@@ -66,9 +66,16 @@ for bi = 1:length(block_names) %先算一个
             % it is better to use integers only, however you can use zero padding to
             % increase the frequency resoluton, but I think that is not necessary.
             theta_band = [4:7]; %[4:7]
-            alpha_band = [8:11]; %[8:12]
-            beta_band = [12:24]; %[13:24]
-            gamma_band = [24:300];%[24:97];
+            alpha_band = [8:12]; %[8:12]
+            beta_band = [13:24]; %[13:24]
+            gamma_band = [25:49,51:99,101:149,151:199,201:250];%[24:97];
+            
+            
+%             theta_band = [101:140]; 
+%             alpha_band = [141:150]; 
+%             beta_band = [151:190]; 
+%             gamma_band = [191:400];
+            
             
             % define sliding window duration D
             D = 1; % time window to perform FFT in seconds (s), time window in article is probably 0.5 according to their map % this could be changed
@@ -85,6 +92,7 @@ for bi = 1:length(block_names) %先算一个
                 %     data_in_window = data_iEEG(i:(window_length+i-1)); % extract time series data in one window %chao do we need minus 1????
                 freq_resolution = fs / window_length; % define freq_resolution %chao ???
                 X_data = periodogram(data_in_window); % I need to read more books
+                X_data = log10(X_data);
                 freq_range = 0:(length(X_data)-1)*freq_resolution; % define the frequency axis>??????
                 % extract energy of different band  %chao need to make sure the
                 % frequency sampling and energy

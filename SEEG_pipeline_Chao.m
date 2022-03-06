@@ -24,6 +24,13 @@ sbj_name = 'group2_ZS'
 sbj_name = 'test_bowen';
 
 sbj_name = '2015_FT_hankunpeng';
+sbj_name = '2015_FT_huangzutu';
+sbj_name = '2015_FT_songziwei';
+sbj_name = '2015_FT_wangmingming';
+sbj_name = '2015_FT_wangzheng';
+sbj_name = '2015_FT_xumengjiao';
+sbj_name = '2015_FT_yangbihong';
+sbj_name = '2015_FT_yinfengting';
 
 % center
 if strcmp(sbj_name(6:7),'FT')
@@ -33,7 +40,7 @@ else
 end
 
 % Get block names
-block_names = BlockBySubj(sbj_name,project_name)
+block_names = BlockBySubj(sbj_name,project_name);
 
 % take care of the directory 
 dirs = InitializeDirs(project_name, sbj_name, comp_root, server_root, code_root); 
@@ -45,7 +52,7 @@ dirs = InitializeDirs(project_name, sbj_name, comp_root, server_root, code_root)
 CreateFolders(sbj_name, project_name, block_names, center, dirs, 1);
 
 % Copy the iEEG and behavioral files from server to local folders
-parfor i = 1:length(block_names)
+for i = 1:length(block_names)
     CopyFilesServer(sbj_name,project_name,block_names{i},dirs) % CZ_important here
 end
 
@@ -88,15 +95,15 @@ remark = true; % Manually determine whether the electrode belongs to surface or 
 ER_pipeline_Chao(sbj_name, project_name, block_names, dirs , 'Band', 'EI') 
 %Step 2
 Nu = 1.5;  %1.25
-Lamda = 150; %80
-Eta = 2;
-EI_window = [20 70];%sjy;[50 150];%seconds
+Lamda = 200; %80
+Eta = 5;
+EI_window = [];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(1), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)%test
 
-Nu = 1.2;
-Lamda = 100;
-Eta = 4;
-EI_window = [0 65];%sjy;[50 150];%seconds
+Nu = 1.5;
+Lamda = 200;
+Eta = 5;
+EI_window = [220 300];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(2), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)
 
 %% Group analysis of the subjVar_volume_BR.eleinfo

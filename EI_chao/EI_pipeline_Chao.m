@@ -388,6 +388,8 @@ for bi = 1%:length(block_names)
     EI_table(~gray_idx) = {NaN};
     sz_loc_EI.eleinfo.(name) = EI_table;%%%
     
+    EI_index = sz_loc_EI.eleinfo.EI(gray_idx);%%%%% make the break here!!!!!!!!
+    
     % creat the time interval between the EI =1 and other electrodes in
     % each table element
     name = 'time_interval';
@@ -473,6 +475,8 @@ for bi = 1%:length(block_names)
     %     EI = cell2mat(sz_loc_EI.eleinfo.EI(:));
     EI_color = cell2mat(EI_index);
     EI_color(isnan(EI_color)) = 0;
+    
+%     EI_color = cell2mat(sz_loc_EI.eleinfo.EI);
     
     
     view_side = lower(bv_chan_hem{1});

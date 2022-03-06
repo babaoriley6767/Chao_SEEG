@@ -29,6 +29,20 @@ for i = 1:length(block_name)
         [hdr,D] = edfread_China(fname,'targetsignals',[1:40,43:84]);
     elseif strcmp(sbj_name,'2015_FT_hankunpeng')
         [hdr,D] = edfread_China(fname,'targetsignals',[1:140]);
+    elseif strcmp(sbj_name,'2015_FT_huangzutu')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:43,46:69]);
+    elseif strcmp(sbj_name,'2015_FT_songziwei')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:43,46:67,72:103]);
+    elseif strcmp(sbj_name,'2015_FT_wangmingming')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:119]);
+    elseif strcmp(sbj_name,'2015_FT_wangzheng')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:40,43:64,69:78]);%get rid of the right side
+    elseif strcmp(sbj_name,'2015_FT_xumengjiao')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:62,69:96]);
+    elseif strcmp(sbj_name,'2015_FT_yangbihong')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:98]);
+        elseif strcmp(sbj_name,'2015_FT_yinfengting')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:40,43:64,69:80]);
     else
         [hdr, D] = edfread_China(fname);
     end
