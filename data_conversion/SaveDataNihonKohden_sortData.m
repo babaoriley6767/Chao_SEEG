@@ -61,6 +61,8 @@ for i = 1:length(block_name)
         [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:69]);
     elseif strcmp(sbj_name,'2017_FT_linzixuan')
         [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:67]);
+    elseif strcmp(sbj_name,'2017_FT_liuboqiang')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:129]);
     else
         [hdr, D] = edfread_China(fname);
     end

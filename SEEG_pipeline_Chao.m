@@ -40,6 +40,7 @@ sbj_name = '2017_FT_jielei';
 sbj_name = '2017_FT_lijingjing';
 sbj_name = '2017_FT_lilechun';
 sbj_name = '2017_FT_linzixuan';
+sbj_name = '2017_FT_liuboqiang';
 
 %% center
 if strcmp(sbj_name(6:7),'FT')
@@ -110,8 +111,8 @@ EI_window = [];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(1), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)%test
 
 Nu = 1.5;
-Lamda = 150;
-Eta = 5;
+Lamda = 350;
+Eta = 7;
 EI_window = [];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(2), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)
 
