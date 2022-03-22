@@ -56,7 +56,7 @@ for i = 1:length(block_name)
     elseif strcmp(sbj_name,'2017_FT_jielei')
         [hdr,D] = edfread_China(fname,'targetsignals',[1:43,46:108]);
     elseif strcmp(sbj_name,'2017_FT_lijingjing')
-        [hdr,D] = edfread_China(fname,'targetsignals',[1:128]);
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:106,113:128]);
     elseif strcmp(sbj_name,'2017_FT_lilechun')
         [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:69]);
     elseif strcmp(sbj_name,'2017_FT_linzixuan')
@@ -71,6 +71,24 @@ for i = 1:length(block_name)
         [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:61,70:101]);
     elseif strcmp(sbj_name,'2017_FT_panzhiyong')
         [hdr,D] = edfread_China(fname,'targetsignals',[1:90]);
+    elseif strcmp(sbj_name,'2017_FT_wangmengru')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:57,70:155]);
+    elseif strcmp(sbj_name,'2017_FT_wangyan')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:125,134:151]);
+    elseif strcmp(sbj_name,'2017_FT_xionghuihui')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:65,70:93]);
+    elseif strcmp(sbj_name,'2017_FT_yangchenglei')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:60,67:94]);
+    elseif strcmp(sbj_name,'2017_FT_yangrui')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41,44:95]);
+    elseif strcmp(sbj_name,'2017_FT_yaodongyuan')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:58,67:126,131:210]);
+    elseif strcmp(sbj_name,'2017_FT_yena')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41 44:67 70:93]);
+    elseif strcmp(sbj_name,'2017_FT_yuanye')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41 44:123 134:149]);
+    elseif strcmp(sbj_name,'2017_FT_zhanggenhong')
+        [hdr,D] = edfread_China(fname,'targetsignals',[1:41 44:79]);
     else
         [hdr, D] = edfread_China(fname);
     end

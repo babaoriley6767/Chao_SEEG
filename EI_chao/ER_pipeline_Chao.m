@@ -93,7 +93,10 @@ for bi = 1:length(block_names) %先算一个
                 %     data_in_window = data_iEEG(i:(window_length+i-1)); % extract time series data in one window %chao do we need minus 1????
                 freq_resolution = fs / window_length; % define freq_resolution %chao ???
                 X_data = periodogram(data_in_window); % I need to read more books
+                if bi==2
                 X_data = log10(X_data);
+                else
+                end
                 freq_range = 0:(length(X_data)-1)*freq_resolution; % define the frequency axis>??????
                 % extract energy of different band  %chao need to make sure the
                 % frequency sampling and energy

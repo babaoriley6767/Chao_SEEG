@@ -1019,9 +1019,12 @@ for bi = 1%:length(block_names)
     sz_loc_EI.mat_EI_EZ = mat_EI_EZ;
     sz_loc_EI.mat_EI_PZ = mat_EI_PZ;
     sz_loc_EI.mat_EI_EZPZ = mat_EI_EZPZ;
-    sz_loc_EI.mat_TII_EZ = mat_EI_EZ;
-    sz_loc_EI.mat_TII_PZ = mat_EI_PZ;
-    sz_loc_EI.mat_TII_EZPZ = mat_EI_EZPZ;
+    sz_loc_EI.mat_TII_EZ = mat_TII_EZ;
+    sz_loc_EI.mat_TII_PZ = mat_TII_PZ;
+    sz_loc_EI.mat_TII_EZPZ = mat_TII_EZPZ;
+    sz_loc_EI.mat_ER_EZ = mat_ER_idx_EZ;
+    sz_loc_EI.mat_ER_PZ = mat_ER_idx_PZ;
+    sz_loc_EI.mat_ER_PZ = mat_ER_idx_EZPZ;%%%%%% lost of ER mat
     sz_loc_EI.T = T;
     sz_loc_EI.TII_seq = TII_seq;
     
