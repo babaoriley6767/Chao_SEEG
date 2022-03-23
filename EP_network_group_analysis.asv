@@ -130,11 +130,10 @@ for i = 1:length(folders) %%% access each mat file
     BR_chan_length = size(eleinfo,1);
     bad_chan_idx = ones(size(eleinfo,1),1);
     bad_chan_idx(bad_chan',1) = 0;
+    
+    
     anat_idx = ~strcmp(eleinfo.AAL3,'NotAvailable');
     YEO7_idx = ~strcmp(eleinfo.YEO7,'NotAvailable');
-    
-    
-    
     layer1_SEEG_idx = ~strcmp(eleinfo.YEO7,'NaN');
     layer2_YEO7_idx = layer1_SEEG_idx & anat_idx & YEO7_idx & bad_chan_idx;
     layer3_EP_idx = layer2_YEO7_idx & ~isnan(cell2mat(eleinfo.EI));
@@ -365,7 +364,6 @@ folders = folders(~startsWith(folders,"."))' ;
 
 data_cells = cell(length(folders),1);
 data_EI_cells = cell(length(folders),3);
-data_TII_cells = cell(length(folders),3);
 data_ER_cells = cell(length(folders),3);
 for i = 1:length(folders)
     fn = sprintf('%s/%s',work_path,folders(i,1));
@@ -397,7 +395,6 @@ for i = 1:length(folders)
     data_EI_cells{i,3} = sz_loc_EI.mat_EI_EZPZ;
     
     
-    
     T = sz_loc_EI.T;
     
     % ER_idx extraction
@@ -423,30 +420,6 @@ for i = 1:length(folders)
     end
     data_ER_cells{i,3} = mat_ER_idx_EZPZ;
     
-    % TII extraction
-    
-    data_TII_cells{i,1} = sz_loc_EI.mat_TII_EZ;
-    data_TII_cells{i,2} = sz_loc_EI.mat_TII_PZ;
-    data_TII_cells{i,3} = sz_loc_EI.mat_TII_EZPZ;
-    
-    mat_TII_EZ = nan(7,7);
-    for j=1:length(YEO7_v)
-        mat_TII_EZ(row_idx,j) = nanmean(T{'TII_EZ',j}{:});
-    end
-    data_TII_cells{i,1} = mat_TII_EZ;
-    
-    mat_TII_PZ = nan(7,7);
-    for j=1:length(YEO7_v)
-        mat_TII_PZ(row_idx,j) = nanmean(T{'TII_PZ',j}{:});
-    end
-    data_TII_cells{i,2} = mat_TII_PZ;
-    
-    mat_TII_EZPZ = nan(7,7);
-    for j=1:length(YEO7_v)
-        mat_TII_EZPZ(row_idx,j) = nanmean(T{'TII_EZPZ',j}{:});
-    end
-    data_TII_cells{i,3} = mat_TII_EZPZ;
-    
 end
 
 G_sheet  = vertcat(data_cells{:});
@@ -457,33 +430,17 @@ EI_EZPZ_matrix = nanmean(cat(3,data_EI_cells{:,3}),3);
 ER_EZ_matrix = nanmean(cat(3,data_ER_cells{:,1}),3);
 ER_PZ_matrix = nanmean(cat(3,data_ER_cells{:,2}),3);
 ER_EZPZ_matrix = nanmean(cat(3,data_ER_cells{:,3}),3);
-TII_EZ_matrix = nanmean(cat(3,data_TII_cells{:,1}),3);
-TII_PZ_matrix = nanmean(cat(3,data_TII_cells{:,2}),3);
-TII_EZPZ_matrix = nanmean(cat(3,data_TII_cells{:,3}),3);
 
-save('EP_test_2_guo.mat','EI_EZ_matrix','EI_PZ_matrix','EI_EZPZ_matrix',...
-    'ER_EZ_matrix','ER_PZ_matrix','ER_EZPZ_matrix',...
-    'TII_EZ_matrix','TII_PZ_matrix','TII_EZPZ_matrix');
-
-figure
-imagesc(TII_PZ_matrix)
-colormap(gca,'parula');
-colorbar() ; % Add color bar and make sure the color ranges from 0:1
-caxis([-1,1]);
-set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
-set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
-set(gca,'XTickLabelRotation',45)
-
-%% inside and outside the YEO7
+% we need to adjust the TII because sometimes the EI =1 electrodes is not
+% the earliest one
 folders = dir(work_path);
 folders = string({folders.name});
 folders = folders(~startsWith(folders,"."))' ;
 
-
 data_cells = cell(length(folders),1);
-data_EI_cells = cell(length(folders),3);
 data_TII_cells = cell(length(folders),3);
-data_ER_cells = cell(length(folders),3);
+
+exTII_no_all = [];
 for i = 1:length(folders)
     fn = sprintf('%s/%s',work_path,folders(i,1));
     load(fn);
@@ -505,79 +462,326 @@ for i = 1:length(folders)
     eleinfo.sbjs_bv_names = sbjs_bv_names;
     eleinfo.YEO7idx_Group = ones(length(eleinfo.bv_names),1).*sz_loc_EI.YEO7idx_Group;
     
+    YEO7_v = [5,7,1,2,3,4,6];
+    row_idx = dsearchn(YEO7_v',sz_loc_EI.YEO7idx_Group);
+    
+    if eleinfo.time_interval{cell2mat(eleinfo.EI)==1}~=0
+        disp([name ', this SZ EI=1 is not the earliest one'])
+    else
+    end
+    
+    eleinfo.time_interval_adjust = cell2mat(eleinfo.time_interval) - eleinfo.time_interval{cell2mat(eleinfo.EI)==1};
+    exTII_idx =  eleinfo.time_interval_adjust <0;
+    
+    
+    
+    TII_seq = sz_loc_EI.TII_seq;
+    
+    time_interval_index_adjust = nan(size(eleinfo,1),1);
+    for j = 1:size(eleinfo,1)
+        if isnan(eleinfo.time_interval_adjust(j))
+            time_interval_index_adjust(j) = NaN;
+        elseif exTII_idx(j)
+            time_interval_index_adjust(j) = NaN;
+        elseif ~exTII_idx(j)
+            TIIid = dsearchn(TII_seq,eleinfo.time_interval_adjust(j));
+            time_interval_index_adjust(j) = 1/TIIid;
+        end
+    end
+    eleinfo.time_interval_index_adjust = time_interval_index_adjust;
+    exTII_no = sum(exTII_idx);
+    exTII_no_all = [exTII_no_all;exTII_no];
+    
+    
+    anat_idx = ~strcmp(eleinfo.AAL3,'NotAvailable');
+    YEO7_idx = ~strcmp(eleinfo.YEO7,'NotAvailable');
+    layer1_SEEG_idx = ~strcmp(eleinfo.YEO7,'NaN');
+    layer2_YEO7_idx = layer1_SEEG_idx & anat_idx & YEO7_idx & bad_chan_idx;
+    layer3_EP_idx = layer2_YEO7_idx & ~isnan(cell2mat(eleinfo.EI));
+    layer4_EI_idx = layer3_EP_idx & cell2mat(eleinfo.EI)==1;
+    layer4_EZ_idx = layer3_EP_idx & cell2mat(eleinfo.EI)>=0.3 & cell2mat(eleinfo.EI) < 1;
+    layer4_PZ_idx = layer3_EP_idx & cell2mat(eleinfo.EI)>0 & cell2mat(eleinfo.EI)<0.3;
+    layer4_EZPZ_idx = layer3_EP_idx & cell2mat(eleinfo.EI)>0& cell2mat(eleinfo.EI) < 1;
+    
+    
+    
+    TII_adjust_EZ_mat = nan(1,length(YEO7_v));
+    TII_adjust_PZ_mat = nan(1,length(YEO7_v));
+    TII_adjust_EPPZ_mat = nan(1,length(YEO7_v));
+    for j = 1:length(YEO7_v)
+        TII_adjust_EZ_mat(j) = nanmean(eleinfo.time_interval_index_adjust(layer4_EZ_idx & ismember(eleinfo.YEO7idx,YEO7_v(j))));
+        TII_adjust_PZ_mat(j) = nanmean(eleinfo.time_interval_index_adjust(layer4_PZ_idx & ismember(eleinfo.YEO7idx,YEO7_v(j))));
+        TII_adjust_EZPZ_mat(j) = nanmean(eleinfo.time_interval_index_adjust(layer4_EZPZ_idx & ismember(eleinfo.YEO7idx,YEO7_v(j))));
+    end
+    row_idx = dsearchn(YEO7_v',sz_loc_EI.YEO7idx_Group);
+    mat_TII_adjust_EZ = nan(7,7);
+    mat_TII_adjust_PZ = nan(7,7);
+    mat_TII_adjust_EZPZ = nan(7,7);
+    
+    mat_TII_adjust_EZ(row_idx,:) = TII_adjust_EZ_mat;
+    mat_TII_adjust_PZ(row_idx,:) =TII_adjust_PZ_mat;
+    mat_TII_adjust_EZPZ(row_idx,:) = TII_adjust_EZPZ_mat;
+    
+    data_TII_cells{i,1} = mat_TII_adjust_EZ;
+    data_TII_cells{i,2} = mat_TII_adjust_PZ;
+    data_TII_cells{i,3} = mat_TII_adjust_EZPZ;
+    
     data_cells{i,1} = eleinfo;
     
-    data_EI_cells{i,1} = sz_loc_EI.mat_EI_EZ;
-    data_EI_cells{i,2} = sz_loc_EI.mat_EI_PZ;
-    data_EI_cells{i,3} = sz_loc_EI.mat_EI_EZPZ;
+end
+disp(['we have exclude ' sum(exTII_no_all) ' electrodes']);
+G_adjust_sheet  = vertcat(data_cells{:});
+
+TII_adjust_EZ_matrix = nanmean(cat(3,data_TII_cells{:,1}),3);
+TII_adjust_PZ_matrix = nanmean(cat(3,data_TII_cells{:,2}),3);
+TII_adjust_EZPZ_matrix = nanmean(cat(3,data_TII_cells{:,3}),3);
+
+
+% all of the 9 matrix
+figure
+subplot(3,3,1)
+imagesc(EI_EZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('EI EZ')
+
+subplot(3,3,2)
+imagesc(EI_PZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('EI PZ')
+
+subplot(3,3,3)
+imagesc(EI_EZPZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('EI EZPZ')
+
+subplot(3,3,4)
+imagesc(TII_adjust_EZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('TII EZ')
+
+subplot(3,3,5)
+imagesc(TII_adjust_PZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('TII PZ')
+
+subplot(3,3,6)
+imagesc(TII_adjust_EZPZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('TII EZPZ')
+
+subplot(3,3,7)
+imagesc(ER_EZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('ER EZ')
+
+subplot(3,3,8)
+imagesc(ER_PZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('ER PZ')
+
+subplot(3,3,9)
+imagesc(ER_EZPZ_matrix)
+colormap(gca,'parula');
+colorbar() ; % Add color bar and make sure the color ranges from 0:1
+caxis([-1,1]);
+set(gca,'XTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'});
+set(gca,'YTicklabel',{'Limbic', 'Default', 'Visual', 'Somatomotor','Dorsal Attention','Ventral Attention','Frontalparietal'})
+set(gca,'XTickLabelRotation',45)
+title('ER EZPZ')
+% figure in the paper
+
+
+
+%% inside and outside the YEO7
+folders = dir(work_path);
+folders = string({folders.name});
+folders = folders(~startsWith(folders,"."))' ;
+
+data_cells = cell(length(folders),1);
+data_TII_cells = cell(length(folders),3);
+
+exTII_no_all = [];
+for i = 1:length(folders)
+    fn = sprintf('%s/%s',work_path,folders(i,1));
+    load(fn);
+    bad_chan = sz_loc_EI.bad_chan;
+    eleinfo = sz_loc_EI.eleinfo;
+    name = sz_loc_EI.name;
     
+    BR_chan_length = size(eleinfo,1);
     
-    data_TII_cells{i,1} = sz_loc_EI.mat_TII_EZ;
-    data_TII_cells{i,2} = sz_loc_EI.mat_TII_PZ;
-    data_TII_cells{i,3} = sz_loc_EI.mat_TII_EZPZ;
+    bad_chan_idx = ones(size(eleinfo,1),1);
+    bad_chan_idx(bad_chan',1) = 0;
+    eleinfo.bad_chan = bad_chan_idx;
     
+    sbjs_bv_names = cell(BR_chan_length,1);
+    for j = 1:BR_chan_length
+        sbjs_bv_names{j} = [name,'_',eleinfo.bv_names{j}];
+    end
     
-    T = sz_loc_EI.T;
+    eleinfo.sbjs_bv_names = sbjs_bv_names;
+    eleinfo.YEO7idx_Group = ones(length(eleinfo.bv_names),1).*sz_loc_EI.YEO7idx_Group;
     
     YEO7_v = [5,7,1,2,3,4,6];
     row_idx = dsearchn(YEO7_v',sz_loc_EI.YEO7idx_Group);
     
-    mat_ER_idx_EZ = nan(7,7);
-    for j=1:length(YEO7_v)
-        mat_ER_idx_EZ(row_idx,j) = nanmean(T{'ER_idx_EZ',j}{:});
+    if eleinfo.time_interval{cell2mat(eleinfo.EI)==1}~=0
+        disp([name ', this SZ EI=1 is not the earliest one'])
+    else
     end
-    data_ER_cells{i,1} = mat_ER_idx_EZ;
     
-    mat_ER_idx_PZ = nan(7,7);
-    for j=1:length(YEO7_v)
-        mat_ER_idx_PZ(row_idx,j) = nanmean(T{'ER_idx_PZ',j}{:});
+    eleinfo.time_interval_adjust = cell2mat(eleinfo.time_interval) - eleinfo.time_interval{cell2mat(eleinfo.EI)==1};
+    exTII_idx =  eleinfo.time_interval_adjust <0;
+    
+    for j = 1:size(eleinfo,1)
+        if  exTII_idx(j)
+            eleinfo.time_interval_adjust(j) = NaN;
+        else
+        end
     end
-    data_ER_cells{i,2} = mat_ER_idx_PZ;
     
-    mat_ER_idx_EZPZ = nan(7,7);
-    for j=1:length(YEO7_v)
-        mat_ER_idx_EZPZ(row_idx,j) = nanmean(T{'ER_idx_EZPZ',j}{:});
+    
+    TII_seq = sz_loc_EI.TII_seq;
+    
+    time_interval_index_adjust = nan(size(eleinfo,1),1);
+    for j = 1:size(eleinfo,1)
+        if isnan(eleinfo.time_interval_adjust(j))
+            time_interval_index_adjust(j) = NaN;
+        elseif exTII_idx(j)
+            time_interval_index_adjust(j) = NaN;
+        elseif ~exTII_idx(j)
+            TIIid = dsearchn(TII_seq,eleinfo.time_interval_adjust(j));
+            time_interval_index_adjust(j) = 1/TIIid;
+        end
     end
-    data_ER_cells{i,3} = mat_ER_idx_EZPZ;
+    eleinfo.time_interval_index_adjust = time_interval_index_adjust;
+    exTII_no = sum(exTII_idx);
+    exTII_no_all = [exTII_no_all;exTII_no];
     
+    
+    anat_idx = ~strcmp(eleinfo.AAL3,'NotAvailable');
+    YEO7_idx = ~strcmp(eleinfo.YEO7,'NotAvailable');
+    layer1_SEEG_idx = ~strcmp(eleinfo.YEO7,'NaN');
+    layer2_YEO7_idx = layer1_SEEG_idx & anat_idx & YEO7_idx & bad_chan_idx;
+    layer3_EP_idx = layer2_YEO7_idx & ~isnan(cell2mat(eleinfo.EI));
+    layer4_EI_idx = layer3_EP_idx & cell2mat(eleinfo.EI)==1;
+    layer4_EZ_idx = layer3_EP_idx & cell2mat(eleinfo.EI)>=0.3 & cell2mat(eleinfo.EI) < 1;
+    layer4_PZ_idx = layer3_EP_idx & cell2mat(eleinfo.EI)>0 & cell2mat(eleinfo.EI)<0.3;
+    layer4_EZPZ_idx = layer3_EP_idx & cell2mat(eleinfo.EI)>0& cell2mat(eleinfo.EI) < 1;
+    
+    
+    
+    TII_adjust_EZ_mat = nan(1,length(YEO7_v));
+    TII_adjust_PZ_mat = nan(1,length(YEO7_v));
+    TII_adjust_EPPZ_mat = nan(1,length(YEO7_v));
+    for j = 1:length(YEO7_v)
+        TII_adjust_EZ_mat(j) = nanmean(eleinfo.time_interval_index_adjust(layer4_EZ_idx & ismember(eleinfo.YEO7idx,YEO7_v(j))));
+        TII_adjust_PZ_mat(j) = nanmean(eleinfo.time_interval_index_adjust(layer4_PZ_idx & ismember(eleinfo.YEO7idx,YEO7_v(j))));
+        TII_adjust_EZPZ_mat(j) = nanmean(eleinfo.time_interval_index_adjust(layer4_EZPZ_idx & ismember(eleinfo.YEO7idx,YEO7_v(j))));
+    end
+    row_idx = dsearchn(YEO7_v',sz_loc_EI.YEO7idx_Group);
+    mat_TII_adjust_EZ = nan(7,7);
+    mat_TII_adjust_PZ = nan(7,7);
+    mat_TII_adjust_EZPZ = nan(7,7);
+    
+    mat_TII_adjust_EZ(row_idx,:) = TII_adjust_EZ_mat;
+    mat_TII_adjust_PZ(row_idx,:) =TII_adjust_PZ_mat;
+    mat_TII_adjust_EZPZ(row_idx,:) = TII_adjust_EZPZ_mat;
+    
+    data_TII_cells{i,1} = mat_TII_adjust_EZ;
+    data_TII_cells{i,2} = mat_TII_adjust_PZ;
+    data_TII_cells{i,3} = mat_TII_adjust_EZPZ;
+    
+    data_cells{i,1} = eleinfo;
     
 end
+disp(['we have exclude ' num2str(sum(exTII_no_all)) ' electrodes']);
+G_adjust_sheet  = vertcat(data_cells{:});
 
-G_sheet  = vertcat(data_cells{:});
 
-anat_idx = ~strcmp(G_sheet.AAL3,'NotAvailable');
-YEO7_idx = ~strcmp(G_sheet.YEO7,'NotAvailable');
 
-layer1_SEEG_idx = ~strcmp(G_sheet.YEO7,'NaN');
-layer2_YEO7_idx = layer1_SEEG_idx & anat_idx & YEO7_idx & G_sheet.bad_chan;
-layer3_EP_idx = layer2_YEO7_idx & ~isnan(cell2mat(G_sheet.EI)) & cell2mat(G_sheet.EI)>0;
-layer4_EI_idx = layer3_EP_idx & cell2mat(G_sheet.EI)==1;
+anat_idx = ~strcmp(G_adjust_sheet.AAL3,'NotAvailable');
+YEO7_idx = ~strcmp(G_adjust_sheet.YEO7,'NotAvailable');
+layer1_SEEG_idx = ~strcmp(G_adjust_sheet.YEO7,'NaN');
+layer2_YEO7_idx = layer1_SEEG_idx & anat_idx & YEO7_idx & G_adjust_sheet.bad_chan;
+layer3_EP_idx = layer2_YEO7_idx & ~isnan(cell2mat(G_adjust_sheet.EI)) & cell2mat(G_adjust_sheet.EI)>0;
+layer4_EI_idx = layer3_EP_idx & cell2mat(G_adjust_sheet.EI)==1;
+layer4_EZPZ_idx = layer3_EP_idx & cell2mat(G_adjust_sheet.EI)>0& cell2mat(G_adjust_sheet.EI) < 1;
 
-idx_sameYEO = ones(size(G_sheet,1),1);
-for i = 1:size(G_sheet,1)
-    if G_sheet.YEO7idx(i)==G_sheet.YEO7idx_Group(i)
+
+idx_sameYEO = ones(size(G_adjust_sheet,1),1);
+for i = 1:size(G_adjust_sheet,1)
+    if G_adjust_sheet.YEO7idx(i)==G_adjust_sheet.YEO7idx_Group(i)
         idx_sameYEO(i) = 1;
     else
         idx_sameYEO(i) = 0;
     end
 end
 
-EI_vec = cell2mat(G_sheet.EI);
-Eu_dis_vec = cell2mat(G_sheet.Eu_dis);
+EI_vec = cell2mat(G_adjust_sheet.EI);
+TII_adjust_vec = G_adjust_sheet.time_interval_index_adjust;
+TI_adjust_vec = G_adjust_sheet.time_interval_adjust;
+ER_vec = cell2mat(G_adjust_sheet.ER_index);
+Eu_dis_vec = cell2mat(G_adjust_sheet.Eu_dis);
 
-idx1 = layer3_EP_idx&idx_sameYEO;
-dataEI1 = EI_vec(idx1);
-sum(dataEI1 > 0.3)/length(dataEI1)
-datadis1 = Eu_dis_vec(idx1);
-idx2 = layer3_EP_idx&~idx_sameYEO;
-dataEI2 = EI_vec(idx2);
-sum(dataEI2 > 0.3)/length(dataEI2)
-datadis2 = Eu_dis_vec(idx2);
+intra_idx = layer4_EZPZ_idx &  idx_sameYEO;
+inter_idx = layer4_EZPZ_idx & ~idx_sameYEO;
+
+intra_EI = EI_vec(intra_idx);
+intra_TI_adjust = TI_adjust_vec(intra_idx);
+intra_TII_adjust = TII_adjust_vec(intra_idx);
+intra_ER = ER_vec(intra_idx);
+intra_Eu_dis = Eu_dis_vec(intra_idx);
+
+inter_EI = EI_vec(inter_idx);
+inter_TI_adjust = TI_adjust_vec(inter_idx);
+inter_TII_adjust = TII_adjust_vec(inter_idx);
+inter_ER = ER_vec(inter_idx);
+inter_Eu_dis = Eu_dis_vec(inter_idx);
 
 
-
-data2 = dataEI2;
-data1 = datadis2;
+data2 = inter_TI_adjust;
+data1 = inter_Eu_dis;
 figure
 scatter(data1, data2, '+', 'MarkerFaceColor', 'k');
 ylabel('EI PZ');
@@ -674,6 +878,7 @@ layer1_SEEG_idx = ~strcmp(G_sheet.YEO7,'NaN');
 layer2_YEO7_idx = layer1_SEEG_idx & anat_idx & YEO7_idx & G_sheet.bad_chan;
 layer3_EP_idx = layer2_YEO7_idx & ~isnan(cell2mat(G_sheet.EI)) & cell2mat(G_sheet.EI)>0;
 layer4_EI_idx = layer3_EP_idx & cell2mat(G_sheet.EI)==1;
+
 
 idx_sameYEO = ones(size(G_sheet,1),1);
 for i = 1:size(G_sheet,1)

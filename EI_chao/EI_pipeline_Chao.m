@@ -95,9 +95,9 @@ for bi = 1%:length(block_names)
     
     %     for i = 1:length(ER_matrix)
     %         UN_temp(:,i) = ER_matrix(:,i) - ER_n(:,i)-Nu;
-    %         UN(:,i) = sum(UN_temp(:,1:i),2);
+    %         UN(:,i) = sum(UN_temp(:,1:i),2);    for i = 1:length(ER_matrix)
+
     %     end
-    for i = 1:length(ER_matrix)
         UN_temp(:,i) = ER_matrix(:,i) - ER_n(:,i)-Nu;
     end
     
@@ -1048,5 +1048,5 @@ for bi = 1%:length(block_names)
     
     
 end
-end
+
 

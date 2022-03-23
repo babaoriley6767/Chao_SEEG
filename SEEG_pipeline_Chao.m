@@ -69,6 +69,7 @@ dirs = InitializeDirs(project_name, sbj_name, comp_root, server_root, code_root)
 
 % Get iEEG sampling rate and data format
 [fs_iEEG, data_format] = GetFSdataFormat(center);
+%%
 
 % Create subject folders and global_var
 CreateFolders(sbj_name, project_name, block_names, center, dirs, 1);
