@@ -10,6 +10,7 @@ addpath('/Users/tony/Desktop/function_tools/spm12_7219')
 %Initialize Directories
 project_name = 'SEEG_test';
 project_name = 'EPnetwork';
+project_name = 'CINGULATE';
 
 % Retrieve subject information
 sbj_name = '2017_FT_SP_018_xiangxiang';
@@ -54,6 +55,8 @@ sbj_name = '2017_FT_yena';
 sbj_name = '2017_FT_yuanye';
 sbj_name = '2017_FT_zhanggenhong';
 
+% these are the cingulate project sbjs
+sbj_name = ''
 %% center
 if strcmp(sbj_name(6:7),'FT')
     center = 'fengtai';
