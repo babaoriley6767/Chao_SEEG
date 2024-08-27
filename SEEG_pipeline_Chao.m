@@ -7,7 +7,7 @@ addpath(genpath('/Users/tony/Desktop/function_tools/iELVis/'))
 addpath(genpath('/Users/tony/Desktop/function_tools/for_plot_Stanford'))
 addpath('/Users/tony/Desktop/function_tools/spm12_7219')
 [server_root, comp_root, code_root] = AddPaths('Chao_iMAC');%home%%% project
-
+%%%%test!%%
 %Initialize Directories
 project_name = 'SEEG_test';
 project_name = 'EPnetwork';
