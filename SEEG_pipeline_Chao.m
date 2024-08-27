@@ -1,16 +1,18 @@
 %% Branch 1 basic config
+restoredefaultpath
 %set roots
 addpath(genpath('/Users/tony/Documents/Stanford/Chao_SEEG/'))
 addpath(genpath('/Users/tony/Documents/Stanford/DELLO'))
 addpath(genpath('/Users/tony/Desktop/function_tools/iELVis/'))
-addpath(genpath('/Users/tony/Desktop/function_tools/for_plot/CCEP_fMRI/'))
+addpath(genpath('/Users/tony/Desktop/function_tools/for_plot_Stanford'))
 addpath('/Users/tony/Desktop/function_tools/spm12_7219')
-[server_root, comp_root, code_root] = AddPaths('Chao_iMAC');%home
+[server_root, comp_root, code_root] = AddPaths('Chao_iMAC');%home%%% project
 
 %Initialize Directories
 project_name = 'SEEG_test';
 project_name = 'EPnetwork';
 project_name = 'CINGULATE';
+project_name = 'liuchang';
 
 % Retrieve subject information
 sbj_name = '2017_FT_SP_018_xiangxiang';
@@ -54,6 +56,15 @@ sbj_name = '2017_FT_yaodongyuan';
 sbj_name = '2017_FT_yena';
 sbj_name = '2017_FT_yuanye';
 sbj_name = '2017_FT_zhanggenhong';
+
+sbj_name = '2015_FT_hankunpeng2023';
+
+sbj_name = '2015_FT_gaojia';
+sbj_name = '2024_FT_gaojia';
+
+sbj_name = 'WWY';% center = 'tiantan'
+sbj_name = 'ZWC';
+sbj_name = 'ZX';
 
 % these are the cingulate project sbjs
 sbj_name = ''
@@ -119,10 +130,12 @@ remark = true; % Manually determine whether the electrode belongs to surface or 
 %% EI
 %Step 1 
 ER_pipeline_Chao(sbj_name, project_name, block_names, dirs , 'Band', 'EI') 
+
+
 %Step 2
-Nu = 1.5;  %1.25
-Lamda = 500; %80
-Eta = 15;
+Nu = 1.25;  %1.25
+Lamda = 60; %80
+Eta = 5;
 EI_window = [];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(1), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)%test
 
@@ -131,6 +144,17 @@ Lamda = 650;
 Eta = 10;
 EI_window = [20 70];%sjy;[50 150];%seconds
 EI_pipeline_Chao(sbj_name, project_name, block_names(2), dirs, 'Band', 'EI',Nu,Lamda,Eta,EI_window)
+
+%%
+%Step 1 
+ER_pipeline_Chao_nonloc(sbj_name, project_name, block_names, dirs , 'Band', 'EI') 
+%Step 2
+Nu = 1.2;  %1.25
+Lamda = 10; %80
+Eta = 8;
+EI_window = [];%sjy;[50 150];%seconds
+EI_pipeline_Chao_nonloc(sbj_name,project_name,block_names,dirs,'Band', 'EI',Nu,Lamda,Eta,EI_window)
+
 
 %% Group analysis of the subjVar_volume_BR.eleinfo
 
@@ -141,4 +165,11 @@ end
 
 figure
 plot([0:0.2:20],y);
+
+
+
+
+
+
+
         

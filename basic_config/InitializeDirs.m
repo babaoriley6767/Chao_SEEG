@@ -43,7 +43,7 @@ else
         warning('There is no Freesurfer folder')
         dirs.freesurfer = [];
     else
-        dirs.freesurfer = ['//Volumes/workstation/EPNETWORK/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
+        dirs.freesurfer = ['/Volumes/workstation/EPNETWORK/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
     end
 end
 
@@ -57,7 +57,7 @@ else
     end
     sbj_folder_name = all_folders(find(tpm == 1)).name;
 
-    all_folders_sbj = dir(fullfile(['//Volumes/workstation/EPNETWORK/server/' sbj_folder_name]));%/Volumes/CHAO_IRON_M/data_SEEG/server/
+    all_folders_sbj = dir(fullfile(['/Volumes/workstation/EPNETWORK/server/' sbj_folder_name]));%/Volumes/CHAO_IRON_M/data_SEEG/server/
     for i = 1:length(all_folders_sbj)
         tpm_2(i) = contains(all_folders_sbj(i).name, 'visa');
     end
@@ -65,7 +65,7 @@ else
         warning('There is no Brianvisa folder')
         dirs.brainvisa = [];
     else
-        dirs.brainvisa = ['//Volumes/workstation/EPNETWORK/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
+        dirs.brainvisa = ['/Volumes/workstation/EPNETWORK/server/' sbj_folder_name '/' all_folders_sbj(tpm_2).name '/'];%/Volumes/CHAO_IRON_M/data_SEEG/server/
     end
 end 
     

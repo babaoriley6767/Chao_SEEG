@@ -18,9 +18,48 @@ end
 
 
 
+%% Creat a new folder for the  Brainvisaloc (格式问题，spm不识别文件夹)
+folder_Brainvisa = [server_root,filesep,sbj_name,filesep,'Brainvisa'];
+folder_Brainvisa_loc = [server_root,filesep,sbj_name,filesep,'Brainvisa_loc'];
+if ~exist(folder_Brainvisa_loc)
+    mkdir(folder_Brainvisa_loc);
+    all_files = dir(fullfile(folder_Brainvisa));
+    if isempty(all_files)
+        warning('You don''t have the orignal Brainvisa files')
+    else
+        for i = 1:length(all_files)
+            if contains(all_files(i).name, 'txt')
+                copyfile([folder_Brainvisa,filesep,all_files(i).name], folder_Brainvisa_loc);
+                display(sprintf('Copied txt file %s to %s', all_files(i).name, folder_Brainvisa_loc));
+            else
+            end
+        end
+        for i = 1:length(all_files)
+            BrainMask(i) = contains(all_files(i).name, 'BrainMask.nii');
+        end
+        for i = 1:length(all_files)
+            nii(i) = contains(all_files(i).name, '.nii');
+        end
+        nii = nii&(~BrainMask);
+        for i  = 1:length(all_files)
+            if nii(i)
+                nii_length(i) = strlength(all_files(i).name);
+            else
+                nii_length(i) = 999;
+            end
+        end
+        [~,nii_idx] = min(nii_length,[],2,'linear');
+        copyfile([folder_Brainvisa,filesep,all_files(nii_idx).name], folder_Brainvisa_loc);
+        display(sprintf('Copied txt file %s to %s', all_files(nii_idx).name, folder_Brainvisa_loc));
+        
+    end
+else
+end
+
 %% this is from Dello_label
-cd([server_root,filesep,sbj_name,filesep,'Brainvisa'])
+cd([server_root,filesep,sbj_name,filesep,'Brainvisa_loc'])
 fname = dir;
+%fname(strncmp({fname.name}, '.', 1)) = [];
 if ~any(strcmp({fname.name}, 'ElecResults.csv'))
     % run the SPM
     SegMRI

@@ -5,14 +5,14 @@ function CreateFolders(sbj_name, project_name, block_name, center, dirs, import_
 sbj_name_generic = sbj_name;
 
 if import_server
-    all_folders = dir(fullfile('/Volumes/workstation/EPNETWORK/server/'));%/Volumes/CHAO_IRON_M/data_SEEG/server/
+    all_folders = dir(fullfile('/Volumes/workstation/EPNETWORK/server/'));%/Volumes/CHAO_IRON_M/data_SEEG/server/  '/Volumes/workstation/EPNETWORK/server/'
     for i = 1:length(all_folders)
         tpm(i) = contains(all_folders(i).name, sbj_name_generic);
     end
     sbj_folder_name = all_folders(find(tpm == 1)).name;
 end
 
-%% more laayer under neuraldata
+%% more layer under neuraldata
 
 folder_sublayers={'SpecData', 'BandData'};%need to find out if I need these
 

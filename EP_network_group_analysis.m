@@ -10,7 +10,51 @@ addpath('/Users/tony/Desktop/function_tools/spm12_7219')
 
 project_name = 'EPnetwork';
 
-sbj_names = {'2015_FT_hankunpeng';
+% sbj_names = {'2015_FT_hankunpeng';
+%     '2015_FT_huangzutu';
+%     '2015_FT_songziwei';
+%     '2015_FT_wangmingming';
+%     '2015_FT_wangzheng';
+%     '2015_FT_xumengjiao';
+%     '2015_FT_yangbihong';
+%     '2015_FT_yinfengting';
+%     '2015_FT_yuanjinrui';
+%     '2015_FT_zhaoxichun';
+%     '2017_FT_chengang';
+%     '2017_FT_genghaowen';
+%     '2017_FT_guyuxuan';
+%     '2017_FT_jielei';
+%     '2017_FT_lijingjing';
+%     '2017_FT_lilechun';
+%     '2017_FT_linzixuan';
+%     '2017_FT_liuboqiang';
+%     '2017_FT_liuruilin';
+%     '2017_FT_masinan';
+%     '2017_FT_panzhiyong';
+%     '2017_FT_wangmengru';
+%     '2017_FT_wangyan';
+%     '2017_FT_xionghuihui';
+%     '2017_FT_yangchenglei';
+%     '2017_FT_yangrui';
+%     '2017_FT_yaodongyuan';
+%     '2017_FT_yena';
+%     '2017_FT_yuanye';
+%     '2017_FT_zhanggenhong'};
+
+sbj_names = {'2015_FT_Yangzhizhong';
+    '2016_FT_Chenbinbin';
+    '2016_FT_fanglei';
+    '2016_FT_liujiafeng';
+    '2016_FT_Wuyuhua';
+    '2017_FT_Wuxiaolong';
+    '2017_FT_Xiangxiang';
+    '2019_TT_wudi';
+    '2020_TT_jiawenqiao';
+    '2020_TT_liubingtong';
+    '2020_TT_yurongqi';
+    '2020_TT_duguoyin';
+    '2019_TT_wangjingfan';
+    '2015_FT_hankunpeng';
     '2015_FT_huangzutu';
     '2015_FT_songziwei';
     '2015_FT_wangmingming';
@@ -42,7 +86,7 @@ sbj_names = {'2015_FT_hankunpeng';
     '2017_FT_zhanggenhong'};
 
 dirs = InitializeDirs(project_name, sbj_names{1}, comp_root, server_root, code_root);
-work_path = '/Users/tony/Desktop/4_working_data/Group_analysis/data';%%% this folder is for the EI ER TII plot
+work_path = '/Users/tony/Desktop/4_working_data/Group_analysis/data_2';%%% this folder is for the EI ER TII plot
 work_sbjs_path = '/Users/tony/Desktop/4_working_data/Group_analysis/data_sbjs';%%% this folder is for the electrodes pot
 R_path = '/Users/tony/Desktop/4_working_data/Group_analysis/R_PART';
 %% copy the EI mat file to work folder
@@ -355,6 +399,124 @@ cfg.backgroundColor = [1,1,1];
 % cfg.overlayParcellation='Y7';
 cfgOut = plotPialSurf_v2('fsaverage',cfg);
 
+%% YEO7,EP and EI electrodes
+folders = dir(work_path);
+folders = string({folders.name});
+folders = folders(~startsWith(folders,"."))' ;
+
+
+data_cells = cell(length(folders),1);
+for i = 1:length(folders)
+    fn = sprintf('%s/%s',work_path,folders(i,1));
+    load(fn);
+    bad_chan = sz_loc_EI.bad_chan;
+    eleinfo = sz_loc_EI.eleinfo;
+    name = sz_loc_EI.name;
+    
+    BR_chan_length = size(eleinfo,1);
+    
+    bad_chan_idx = ones(size(eleinfo,1),1);
+    bad_chan_idx(bad_chan',1) = 0;
+    eleinfo.bad_chan = bad_chan_idx;
+    
+    sbjs_bv_names = cell(BR_chan_length,1);
+    for j = 1:BR_chan_length
+        sbjs_bv_names{j} = [name,'_',eleinfo.bv_names{j}];
+    end
+    
+    eleinfo.sbjs_bv_names = sbjs_bv_names;
+    eleinfo.YEO7idx_Group = ones(length(eleinfo.bv_names),1).*sz_loc_EI.YEO7idx_Group;
+    data_cells{i,1} = eleinfo;
+end
+
+G_sheet  = vertcat(data_cells{:});
+
+anat_idx = ~strcmp(G_sheet.AAL3,'NotAvailable');
+YEO7_idx = ~strcmp(G_sheet.YEO7,'NotAvailable');
+
+layer1_SEEG_idx = ~strcmp(G_sheet.YEO7,'NaN');
+layer2_YEO7_idx = layer1_SEEG_idx & anat_idx & YEO7_idx & G_sheet.bad_chan;
+layer3_EP_idx = layer2_YEO7_idx & ~isnan(cell2mat(G_sheet.EI));
+layer4_EI_idx = layer3_EP_idx & cell2mat(G_sheet.EI)==1;
+
+YEO7_coords_305_all = G_sheet.MNI305_volume(layer2_YEO7_idx,:);
+[YEO7_coords_305_UNQ,InSEEG_all,InSEEG_UNQ] = unique(YEO7_coords_305_all,'rows');
+EP_coords_305_all = G_sheet.MNI305_volume(layer3_EP_idx,:);
+[EP_coords_305_UNQ,InEP_all,InEP_UNQ] = unique(EP_coords_305_all,'rows');
+EI_coords_305_all = G_sheet.MNI305_volume(layer4_EI_idx,:);
+[EI_coords_305_UNQ,InEI_all,InEI_UNQ] = unique(EI_coords_305_all,'rows');
+
+YEO7_EP_idx = ismember(YEO7_coords_305_UNQ,EP_coords_305_UNQ,'rows');
+if sum(YEO7_EP_idx)~= length(EP_coords_305_UNQ)
+    warning('plz checking the position of the electrodes  SEEG EP')
+end
+
+YEO7_EI_idx = ismember(YEO7_coords_305_UNQ,EI_coords_305_UNQ,'row');
+if sum(YEO7_EI_idx) ~= length(EI_coords_305_UNQ)
+    warning('plz checking the position of the electrodes  SEEG EI')
+end
+
+YEO7_EP_EI_idx = YEO7_EP_idx+YEO7_EI_idx;
+
+chan_names_YEO7_all = G_sheet.sbjs_bv_names(layer2_YEO7_idx);
+chan_names_YEO7_UNQ = chan_names_YEO7_all(InSEEG_all);
+chan_names_EP_all = G_sheet.sbjs_bv_names(layer3_EP_idx );
+chan_names_EP_UNQ = chan_names_EP_all(InEP_all);
+chan_names_EI_all = G_sheet.sbjs_bv_names(layer4_EI_idx );
+chan_names_EI_UNQ = chan_names_EI_all(InEI_all);
+
+isleft_YEO7_UNQ = ones(size(chan_names_YEO7_UNQ,1),1);
+for j = 1:length(isleft_YEO7_UNQ)
+    if YEO7_coords_305_UNQ(j,1)<=0
+        isleft_YEO7_UNQ(j,1) = 1;
+    elseif YEO7_coords_305_UNQ(j,1)>0
+        isleft_YEO7_UNQ(j,1) = 0;
+    else
+    end
+end
+
+
+
+
+%figure part
+
+load /Users/tony/Documents/Stanford/Chao_SEEG/visualization/colormaps/cdcol_2018.mat
+
+global globalFsDir;
+globalFsDir ='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';
+fsDir='/Users/tony/Desktop/iELVis/Plot_Elelctrodes/';%%% seems useful
+cd([fsDir]);
+
+
+
+eleColors_SEEG_EP_EI = ones(length(YEO7_EP_EI_idx),3);
+
+for i = 1:length(YEO7_EP_EI_idx)
+    if YEO7_EP_EI_idx(i) == 2
+        eleColors_SEEG_EP_EI(i,:) = cdcol.bismuth_yellow;
+    elseif YEO7_EP_EI_idx(i) == 1
+        eleColors_SEEG_EP_EI(i,:) = cdcol.cyan;
+    else
+        eleColors_SEEG_EP_EI(i,:) = cdcol.grey;
+    end
+end
+
+cfg=[];
+cfg.view='rm';
+cfg.elecSize=24;
+cfg.surfType='inflated';
+cfg.opaqueness=1;
+cfg.ignoreDepthElec='n';
+cfg.elecNames = chan_names_SEEG_UNQ;
+cfg.elecCoord=[YEO7_coords_305_UNQ isleft_YEO7_UNQ];
+%cfg. ignoreChans = {'PT049-X7'};
+cfg.elecColors = eleColors_SEEG_EP_EI;
+cfg.elecColorScale=[0 1];
+cfg.title = [];
+cfg.backgroundColor = [1,1,1];
+% cfg.overlayParcellation='Y7';
+cfgOut = plotPialSurf_v2('fsaverage',cfg);
+
 
 %% figure matrix
 
@@ -660,7 +822,7 @@ writetable(ER_EZPZ_matrix_T_flip,'ER_EZPZ_matrix_T_flip.csv')
 
 
 
-%% inside and outside the YEO7
+%% inside and outside the YEO7, making the G_adjust_sheet_T file for R (quick)
 folders = dir(work_path);
 folders = string({folders.name});
 folders = folders(~startsWith(folders,"."))' ;
@@ -669,6 +831,7 @@ data_cells = cell(length(folders),1);
 data_TII_cells = cell(length(folders),3);
 
 exTII_no_all = [];
+sz_id_all = [];
 for i = 1:length(folders)
     fn = sprintf('%s/%s',work_path,folders(i,1));
     load(fn);
@@ -762,9 +925,33 @@ for i = 1:length(folders)
     
     data_cells{i,1} = eleinfo;
     
+    sz_id = ones(size(data_cells{i,1},1),1).*i;
+    sz_id_all = [sz_id_all;sz_id];
+    
+    
 end
 disp(['we have exclude ' num2str(sum(exTII_no_all)) ' electrodes']);
 G_adjust_sheet  = vertcat(data_cells{:});
+
+sbj_id_idx = ones(size(folders));
+for i = 2:size(folders,1)
+    curr_id = convertStringsToChars(folders(i));
+    prev_id = convertStringsToChars(folders(i-1));
+    if strcmp(curr_id(1:end-8),prev_id(1:end-8))
+        sbj_id_idx(i,1) = sbj_id_idx(i-1,1);
+    else
+        sbj_id_idx(i,1) = sbj_id_idx(i-1,1)+1;
+    end
+end
+
+sbj_numid_all = [];
+for i = 1:size(data_cells,1)
+    sbj_numid = ones(size(data_cells{i,1},1),1).*sbj_id_idx(i);
+    sbj_numid_all = [sbj_numid_all;sbj_numid];
+end
+    
+
+
 
 
 
@@ -817,6 +1004,8 @@ G_adjust_sheet_T = table(G_adjust_sheet.YEO7idx_Group,...
     TII_adjust_vec,...
     ER_vec,...
     Eu_dis_vec,...
+    sz_id_all,...
+    sbj_numid_all,...
     'VariableNames',{'YEO7idx_Group',...
     'YEO7idx',...
     'layer4_EZPZ_idx',...
@@ -825,7 +1014,9 @@ G_adjust_sheet_T = table(G_adjust_sheet.YEO7idx_Group,...
     'TI_adjust_vec',...
     'TII_adjust_vec',...
     'ER_vec',...
-    'Eu_dis_vec'});
+    'Eu_dis_vec',...
+    'sz_id_all',...
+    'sbj_numid_all'});
 
 data2 = inter_TI_adjust;
 data1 = inter_Eu_dis;
@@ -1001,6 +1192,60 @@ YEO7_group_table_flip = flip(YEO7_group_table);
 cd(R_path);
 writetable(YEO7_group_table,'YEO7_group.csv')
 writetable(YEO7_group_table_flip,'YEO7_group_flip.csv')
+
+%% modify the G_adjust_sheet_to make the line plot (quick)
+win_length = 31;
+stepping_length = 1;
+vec_sheer = ~(isnan(G_adjust_sheet_T.EI_vec) | isnan(G_adjust_sheet_T.TII_adjust_vec) | isnan(G_adjust_sheet_T.TI_adjust_vec)...
+    | isnan(G_adjust_sheet_T.ER_vec) | (G_adjust_sheet_T.EI_vec == 1)|(G_adjust_sheet_T.layer4_EZPZ_idx)==0|(G_adjust_sheet_T.TI_adjust_vec)==0) ;
+T_sheer = G_adjust_sheet_T(vec_sheer,:);
+time_wins = buffer(0:round(max(T_sheer.Eu_dis_vec)),win_length,win_length-stepping_length,'nodelay');
+T_sheer_cells = cell(size(time_wins,2),1);
+% for i  =1:length(T_sheer_cells)
+%     idx_buffer = time_wins(:,i);
+%     idx_T_sheer = T_sheer.Eu_dis_vec>=idx_buffer(1)&T_sheer.Eu_dis_vec<idx_buffer(end);
+%     data_sheer = T_sheer(idx_T_sheer,:);
+%     T_sheer_cells{i,1} = data_sheer;
+%     T_sheer_cells{i,2} = size(data_sheer,1);% elec number at this window
+%     T_sheer_cells{i,3} = sum(data_sheer.idx_sameYEO);% elec number of intra at this window
+%     T_sheer_cells{i,4} = size(data_sheer,1)-sum(data_sheer.idx_sameYEO);% elec number of inter at this window
+%     
+%     mean_intra = nanmean(data_sheer.EI_vec(data_sheer.idx_sameYEO==1,:));
+%     T_sheer_cells{i,5} = mean_intra;%mean EI_vec intra
+%     mean_inter = nanmean(data_sheer.EI_vec(data_sheer.idx_sameYEO==0,:));
+%     T_sheer_cells{i,6} = mean_inter;%mean EI_vec inter
+%     lme = fitlme(data_sheer,'EI_vec~idx_sameYEO +(1|sbj_numid_all)');
+%     T_sheer_cells{i,7} = lme.Coefficients.pValue(1);%lme p value for EI vec
+%     [h,p,ci,stats] = ttest2(data_sheer.EI_vec(data_sheer.idx_sameYEO==1,:),data_sheer.EI_vec(data_sheer.idx_sameYEO==0,:));
+%     T_sheer_cells{i,8} = p;
+%     
+%     
+%     mean_intra = nanmean(data_sheer.TI_adjust_vec(data_sheer.idx_sameYEO==1,:));
+%     T_sheer_cells{i,9} = mean_intra;%mean TI_vec intra
+%     mean_inter = nanmean(data_sheer.TI_adjust_vec(data_sheer.idx_sameYEO==0,:));
+%     T_sheer_cells{i,10} = mean_inter;%mean TI_vec inter
+%     lme = fitlme(data_sheer,'TI_adjust_vec~idx_sameYEO +(1|sbj_numid_all)');
+%     T_sheer_cells{i,11} = lme.Coefficients.pValue(1);%lme p value for EI vec
+%     [h,p,ci,stats] = ttest2(data_sheer.TI_adjust_vec(data_sheer.idx_sameYEO==1,:),data_sheer.TI_adjust_vec(data_sheer.idx_sameYEO==0,:));
+%     T_sheer_cells{i,12} = p;
+%     
+%     
+%     mean_intra = nanmean(data_sheer.ER_vec(data_sheer.idx_sameYEO==1,:));
+%     T_sheer_cells{i,13} = mean_intra;%mean ER_vec intra
+%     mean_inter = nanmean(data_sheer.ER_vec(data_sheer.idx_sameYEO==0,:));
+%     T_sheer_cells{i,14} = mean_inter;%mean ER_vec inter
+%     lme = fitlme(data_sheer,'ER_vec~idx_sameYEO +(1|sbj_numid_all)');
+%     T_sheer_cells{i,15} = lme.Coefficients.pValue(1);%lme p value for EI vec
+%     [h,p,ci,stats] = ttest2(data_sheer.ER_vec(data_sheer.idx_sameYEO==1,:),data_sheer.ER_vec(data_sheer.idx_sameYEO==0,:));
+%     T_sheer_cells{i,16} = p;
+% 
+% end
+
+cd(R_path);
+%writetable(T_sheer,'G_adjust_sheet_T2.csv')
+writetable(T_sheer,'T_sheer.csv')
+% cd(R_path);
+% writetable(G_adjust_sheet_T,'G_adjust_sheet_T.csv')
 
 %% cingulate
             smidx = G_adjust_sheet.YEO7idx_Group==2;

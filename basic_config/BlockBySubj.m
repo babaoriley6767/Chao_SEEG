@@ -31,9 +31,21 @@ switch project
             BN = {'SZ1'};
         elseif strcmp(sbj,'2017_FT_yuanye')
             BN = {'SZ1'};
+        elseif strcmp(sbj,'2024_FT_gaojia')
+            BN = {'SZ1'};
         else
             BN = {'SZ1','SZ2'};
         end
+    case 'liuchang'
+        if strcmp(sbj,'WWY')
+            BN = {'WWY'};
+        elseif strcmp(sbj,'ZWC')
+            BN = {'ZWC'};
+        elseif strcmp(sbj,'ZX')
+            BN = {'ZX'};
+        else
+        end
+        
 end
 
 
